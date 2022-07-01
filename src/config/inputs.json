@@ -1,0 +1,14 @@
+[
+    {
+        "keyCode": 39,
+        "name": "RIGHT"
+    },
+    {
+        "keyCode": 37,
+        "name": "LEFT"
+    },
+    {
+        "keyCode": 32,
+        "name": "SHOT"
+    }
+]

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0"/>
+		<meta name="apple-mobile-web-app-capable" content="yes"/>
+		
+		<title>Asteroids</title>
+		<script>
+			var params = {
+				musicVolume: 1,
+				soundVolume: 1,
+				disableSounds: false,
+			};
+
+			function getSize() {
+				var w = document.documentElement.clientWidth;
+				var h = document.documentElement.clientHeight;
+
+				if (w == h || w == 0 || h == 0) {
+					w = window.innerWidth;
+					h = window.innerHeight;
+				}
+
+				return { width: w, height: h };
+			}
+		</script>
+
+		<style id='style'>
+			body {
+				-webkit-text-size-adjust: none;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+			}
+		</style>
+		<div style="font: 400 0px LuckiestGuy"; position: relative; visibility: hidden; height: 0;>test</div>
+	</head>
+
+	<body>
+		
+	</body>
+</html>
