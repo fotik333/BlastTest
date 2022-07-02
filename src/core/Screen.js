@@ -42,6 +42,8 @@ class Screen extends Container {
 
             if (childConfig.visible !== undefined) element.visible = childConfig.visible;
 
+            if (childConfig.filters && childConfig.filters.length > 0) element.filters = childConfig.filters;
+
             childConfig.events && childConfig.events.forEach(event => {
                 element.on(event.elementEvent, _ => this.emit(event.exposeEvent));
             });

@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pixi/filter-glow": "^4.1.5",
     "@tweenjs/tween.js": "^18.6.4",
     "file-loader": "^6.2.0",
     "html-inline-script-webpack-plugin": "^2.0.3",

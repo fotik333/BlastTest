@@ -1,5 +1,4 @@
 import { Ticker } from 'pixi.js';
-import { CircleColliderComponent } from '../components';
 
 class GameWorld {
     #isAwaken = false;
@@ -48,28 +47,6 @@ class GameWorld {
 
     removeGameObject(gameObject) {
         this.gameObjects = this.gameObjects.filter(go => go !== gameObject);
-    }
-
-    detectCollisions(position, radius, layer) {
-        let collisions = [];
-
-        this.gameObjects.forEach(go => {
-            let collider = go.getComponent(CircleColliderComponent);
-            
-            if (collider && collider.layer === layer) {
-                let goPosition = go.transform.position;
-                let goRadius = collider.radius;
-
-                let sqrDistance = (position.x - goPosition.x) * (position.x - goPosition.x) + (position.y - goPosition.y) * (position.y - goPosition.y);
-                let sqrRadiusSum = (radius + goRadius) * (radius + goRadius);
-
-                if (sqrDistance < sqrRadiusSum) {
-                    collisions.push(go);
-                }
-            }
-        });
-
-        return collisions;
     }
 }
 

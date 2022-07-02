@@ -1,6 +1,5 @@
 import { InputManager } from "./ui";
 import { Sprite, Container, Graphics } from 'pixi.js';
-import StarsBackground from "./StarsBackground";
 import Screen from './core/Screen';
 import { layoutConfig, HEIGHT, WIDTH, MENU_SCENE, RESULT_SCENE, GAME_SCENE } from './config/layout';
 import gameConfig from './config/gameConfig.json';
@@ -9,21 +8,31 @@ import GameSession from "./core/GameSession";
 import { createSprite } from './utils/utils.js';
 
 class Game extends Container {
-	static sizeX = 8;
-	static sizeY = 8;
-	static typesCount = 5;
+	static sizeX = 3;
+	static sizeY = 3;
+	static typesCount = 9;
 	static colors = [];
 	static minGroupSize = 2;
+
+	static useBomb = true;
+	static bombCount = 3;
+	static bombRadius = 2;
+
+	static useSwap = true;
+	static swapCount = 3;
+
+	static useSupertile = true;
+	static supertileMinGroupSize = 4;
+	static blendsMaxCount = 3;
 
 	constructor() {
 		super();
 
 		for (let i = 0; i < Game.typesCount; i++) {
-			Game.colors.push(Math.random() * 0xffffff);
+			Game.colors.push(Math.random() * 0xaaaaaa + 0x555555);
 		}
 
 		this.addChild(createSprite({ texture: 'background', width: WIDTH, height: HEIGHT}));
-        // this.addChild(new StarsBackground());
 		this.mask = this.addChild(new Graphics().beginFill(0xff0000, 0.5).drawRect(0, 0, WIDTH, HEIGHT).endFill());
 
 		this._initScenes();

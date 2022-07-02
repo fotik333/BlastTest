@@ -1,21 +1,24 @@
 import Component from "../core/Component";
 import GameObject from "../core/GameObject";
 import DisplayObjectComponent from "./DisplayObjectComponent";
-import GameFieldComponent from "./GameFieldComponent";
+// import BlastLogicComponent from "./BlastLogicComponent";
 import TileAnimationComponent from "./TileAnimationComponent";
 import TileInputComponent from "./TileInputComponent";
 import { createSprite } from '../utils/utils.js';
 import GameObjectPool from "../utils/GameObjectPool";
 import Game from "../Game";
 
-class GameFieldBehaviourComponent extends Component {
-    #model;
+class GameFieldAnimatorComponent extends Component {
+    #logic;
     #tilesMap = {};
     #container;
     #transform;
+    #tileToSwap;
 
-    constructor() {
+    constructor(logic) {
         super();
+
+        this.#logic = logic;
     }
 
     onAwake() {
@@ -27,13 +30,28 @@ class GameFieldBehaviourComponent extends Component {
 
         this.tilesPool = new GameObjectPool(this._createTileFunc.bind(this), Game.sizeX * Game.sizeY);
 
-        this.#model = this.gameObject.getComponent(GameFieldComponent);
+        this._createField(this.#logic.getField());
+    }
 
-        this.#model.on(GameFieldComponent.FIELD_CREATED, this._onFieldCreated.bind(this));
-        this.#model.on(GameFieldComponent.FIELD_UPDATED, this._onFieldUpdated.bind(this));
+    _onTilePressed(id) {
+        let result = this.#logic.onTilePressed(id);
 
-        this.#model.on(GameFieldComponent.BURN_FINISHED, this._onBurnFinished.bind(this));
-        this.#model.on(GameFieldComponent.BURN_REJECTED, this._onBurnRejected.bind(this));
+        switch (result.status) {
+            case 'burned':
+                this._onBurnFinished(result);
+                break;
+            case 'rejected':
+                this._onBurnRejected(result);
+                break;
+            case 'swapStarted':
+                this._onSwapStarted(result);
+                break;
+            case 'swapFinished':
+                this._onSwapFinished(result);
+                break;
+            default:
+                break;
+        }
     }
 
     async _onBurnFinished(result) {
@@ -46,7 +64,18 @@ class GameFieldBehaviourComponent extends Component {
 
         await waiter(150);
         
-        this.#model.updateField();
+        this._updateField();
+    }
+
+    _onSwapStarted(result) {
+        this.#tilesMap[result[0]].swapReady();
+    }
+
+    _onSwapFinished(result) {
+        result.forEach(tileInfo => {
+            let tile = this.#tilesMap[tileInfo.id];
+            tile.moveTo(tileInfo.col, tileInfo.row);
+        });
     }
 
     _onBurnRejected(result) {
@@ -55,7 +84,9 @@ class GameFieldBehaviourComponent extends Component {
         });
     }
 
-    async _onFieldUpdated(result) {
+    async _updateField() {
+        let result = this.#logic.getField();
+
         let keys = Object.keys(result);
         let movedTiles = [];
         let newTiles = [];
@@ -74,16 +105,30 @@ class GameFieldBehaviourComponent extends Component {
             tile.moveTo(tileInfo.col, tileInfo.row);
         });
 
-        await waiter(150);
+        await waiter(50);
 
         newTiles.forEach(tileInfo => {
             let tile = this.#tilesMap[tileInfo.id];
             tile.setType(tileInfo.type);
             tile.fallTo(tileInfo.col, tileInfo.row);
         });
+
+        this.#logic.clearFlags();
+
+        await waiter(100);
+        this._checkCombinations();
     }
 
-    _onFieldCreated(tilesMap) {
+    _checkCombinations() {
+        let isCombinationExists = this.#logic.checkCombinations();
+
+        if (!isCombinationExists) {
+            this.#logic.shuffle();
+            this._updateField();
+        }
+    }
+
+    _createField(tilesMap) {
         Object.keys(tilesMap).forEach(key => {
             let tileInfo = tilesMap[key];
 
@@ -98,10 +143,8 @@ class GameFieldBehaviourComponent extends Component {
 
             this.#tilesMap[key] = tileComponent;
         });
-    }
 
-    _onTilePressed(id) {
-        this.#model.onTilePressed(id);
+        this._checkCombinations();
     }
 
     _createTileFunc() {
@@ -119,4 +162,4 @@ class GameFieldBehaviourComponent extends Component {
     }
 }
 
-export default GameFieldBehaviourComponent;
+export default GameFieldAnimatorComponent;

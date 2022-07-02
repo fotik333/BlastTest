@@ -30,6 +30,11 @@ class TileAnimationComponent extends Component {
         this.#transform.rotation = 0;
     }
 
+    swapReady() {
+        let obj = { value: 1 };
+        this.animation = new Tween(obj).to({ value: 1.1 }, 200).onUpdate(_ => this.#transform.scale = { x: obj.value, y: obj.value }).easing(Easing.Sinusoidal.In).repeat(Infinity).yoyo(true).start();
+    }
+
     reject(cb) {
         // let obj = { value: 0 };
         // new Tween(obj).to({ value: 1 }, 200).onUpdate(_ => this.#transform.rotation = obj.value * Math.PI * 2).easing(Easing.Sinusoidal.InOut).start();
@@ -37,10 +42,11 @@ class TileAnimationComponent extends Component {
         // this.reset();
 
         let obj = { value: 1 };
-        new Tween(obj).to({ value: 1.1 }, 50).onUpdate(_ => this.#transform.scale = { x: obj.value, y: obj.value }).easing(Easing.Sinusoidal.In).repeat(1).yoyo(true).start();
+        new Tween(obj).to({ value: 1.1 }, 100).onUpdate(_ => this.#transform.scale = { x: obj.value, y: obj.value }).easing(Easing.Sinusoidal.In).repeat(1).yoyo(true).start();
     }
 
     burn(cb) {
+        this.animation && this.animation.stop();
         // this.reset();
 
         let obj = { value: 1 };
@@ -48,6 +54,7 @@ class TileAnimationComponent extends Component {
     }
 
     fallTo(col, row, cb) {
+        this.animation && this.animation.stop();
         // this.reset();
 
         this.#transform.position = { x: col * offsetX, row: (row - 10) * offsetY };
@@ -61,7 +68,8 @@ class TileAnimationComponent extends Component {
     }
 
     moveTo(col, row, cb) {
-        // this.reset();
+        this.animation && this.animation.stop();
+        this.reset();
 
         let currentPosition = this.#transform.position;
         let obj = { value: 0 };

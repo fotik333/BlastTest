@@ -21,4 +21,8 @@ export default class CheckBox extends Button {
         this.checked = !this.checked;
         this.check.visible = this.checked;
     }
+
+    isChecked() {
+        return this.checked;
+    }
 };

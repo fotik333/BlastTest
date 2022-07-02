@@ -1,5 +1,6 @@
-import { TextButton, Timer } from '../ui';
+import { Button, TextButton, Timer, BoosterButton } from '../ui';
 import { Text, TextStyle } from 'pixi.js';
+import { GlowFilter } from '@pixi/filter-glow';
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
@@ -40,14 +41,29 @@ const layoutConfig = {
                 position: [30, 30],
             },
             {
-                name: 'RocketsAmount',
+                name: 'BoosterBombButton',
                 layer: 'UI',
-                createElement: () => new Text('', new TextStyle({ fill: '#555599', fontSize: 80 })),
-                anchor: [1, 0],
-                position: [WIDTH - 30, 30],
+                createElement: () => new BoosterButton({ normal: 'bonus_bg' }, new Text('Bomb', { fontSize: 90 }), -100, new Text('5', { fontSize: 80 }), 100),
+                events: [
+                    { elementEvent: "pressed", exposeEvent: 'BOMB_BUTTON_PRESSED' }
+                ],
+                anchor: [.5, .5],
+                position: [WIDTH - 200, 200],
+            },
+            {
+                name: 'BoosterSwapButton',
+                layer: 'UI',
+                createElement: () => new BoosterButton({ normal: 'bonus_bg' }, new Text('Swap', { fontSize: 90 }), -100, new Text('5', { fontSize: 80 }), 100),
+                events: [
+                    { elementEvent: "pressed", exposeEvent: 'SWAP_BUTTON_PRESSED' }
+                ],
+                anchor: [.5, .5],
+                position: [WIDTH - 200, 600],
             },
         ],
         events: {
+            onSwapButtonPressed: 'SWAP_BUTTON_PRESSED',
+            onBombButtonPressed: 'BOMB_BUTTON_PRESSED',
             onTimerEnd: 'TIMER_END'
         }
     },
