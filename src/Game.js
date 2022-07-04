@@ -45,8 +45,6 @@ class Game extends Container {
 	constructor() {
 		super();
 
-		new GameSettings;
-
 		// this.addChild(createSprite({ texture: 'background', width: WIDTH, height: HEIGHT}));
 		//56ccc6
 		this.addChild(new Graphics().beginFill(0x56ccc6, 1).drawRect(0, 0, WIDTH, HEIGHT).endFill());
@@ -58,8 +56,10 @@ class Game extends Container {
 	}
 
 	_initScenes() {
+		let gameSettings = new GameSettings;
+
 		//TODO menu scene
-		this._menuScreen = this.addChild(new MenuScreen(layoutConfig.menuScreen));
+		this._menuScreen = this.addChild(new MenuScreen(layoutConfig.menuScreen, gameSettings));
         this._menuScreen.on(layoutConfig.menuScreen.events.onPlayButtonPressed, this._onPlayButtonPressed.bind(this));
 
 		this._resultScreen = this.addChild(new Screen(layoutConfig.resultScreen));

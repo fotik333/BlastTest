@@ -16,33 +16,40 @@ const layoutConfig = {
         screenName: MENU_SCENE,
         children: [
             {
-                name: 'PlayButton',
-                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('PLAY', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
-                events : [
-                    { elementEvent: "pressed", exposeEvent: 'PLAY_BUTTON_PRESSED' }
-                ],
-                scale: 2,
-                position: [WIDTH / 2, HEIGHT / 2 + 200],
-                anchor: [.5, 1]
-            },
-            {
-                name: 'SettingsButton',
-                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('SETTINGS', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
-                events : [
-                    { elementEvent: "pressed", exposeEvent: 'SETTINGS_BUTTON_PRESSED' }
-                ],
-                scale: 2,
-                position: [WIDTH / 2, HEIGHT / 2 - 100],
-                anchor: [.5, 1]
+                name: 'Main',
+                createElement: _ => new Container,
+                children: [
+                    {
+                        name: 'PlayButton',
+                        createElement: () => new TextButton({ normal: 'panel1' }, new Text('PLAY', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                        events : [
+                            { elementEvent: "pressed", exposeEvent: 'PLAY_BUTTON_PRESSED' }
+                        ],
+                        scale: 2,
+                        position: [WIDTH / 2, HEIGHT / 2 + 200],
+                        anchor: [.5, 1]
+                    },
+                    {
+                        name: 'SettingsButton',
+                        createElement: () => new TextButton({ normal: 'panel1' }, new Text('SETTINGS', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                        events : [
+                            { elementEvent: "pressed", exposeEvent: 'SETTINGS_BUTTON_PRESSED' }
+                        ],
+                        scale: 2,
+                        position: [WIDTH / 2, HEIGHT / 2 - 30],
+                        anchor: [.5, 1]
+                    },
+                ]
             },
             {
                 name: 'Settings',
+                visible: false,
                 createElement: () => new Container,
                 children: [
                     {
                         name: 'SizeX',
                         createElement: _ => new Container,
-                        position: [400, 100],
+                        position: [WIDTH / 2, 100],
                         children: [
                             {
                                 name: 'SizeXLabel',
@@ -67,25 +74,208 @@ const layoutConfig = {
                                 anchor: [.5, .5],
                                 position: [100, 0],
                                 events : [
-                                    { elementEvent: "pressed", exposeEvent: 'SIZE_X_DECREASE_BUTTON_PRESSED' }
+                                    { elementEvent: "pressed", exposeEvent: 'SIZE_X_INCREASE_BUTTON_PRESSED' }
                                 ],
                             },
                             {
-                                name: 'SizeX',
+                                name: 'SizeXText',
                                 createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
                                 anchor: [.5, .5],
                                 position: [0, -10],
                             }
                         ]
-                    }
+                    },
+                    {
+                        name: 'SizeY',
+                        createElement: _ => new Container,
+                        position: [WIDTH / 2, 250],
+                        children: [
+                            {
+                                name: 'SizeYLabel',
+                                createElement: () => new Text('Size Y: ', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 70 })),
+                                anchor: [1, .5],
+                                position: [-150, -10],
+                            },
+                            {
+                                name: 'SizeYDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SIZE_Y_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SizeYIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SIZE_Y_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SizeYText',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Colors',
+                        createElement: _ => new Container,
+                        position: [WIDTH / 2, 400],
+                        children: [
+                            {
+                                name: 'ColorsLabel',
+                                createElement: () => new Text('Colors: ', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 70 })),
+                                anchor: [1, .5],
+                                position: [-150, -10],
+                            },
+                            {
+                                name: 'ColorsDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'COLORS_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'ColorsIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'COLORS_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'ColorsText',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
+                        name: 'SupertileGroupSize',
+                        createElement: _ => new Container,
+                        position: [WIDTH / 2, 550],
+                        children: [
+                            {
+                                name: 'SupertileGroupSizeLabel',
+                                createElement: () => new Text('Supertile\ngroup size', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 50 })),
+                                anchor: [1, .5],
+                                position: [-165, -10],
+                            },
+                            {
+                                name: 'SupertileGroupSizeDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SUPERTILE_GROUP_SIZE_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SupertileGroupSizeIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SUPERTILE_GROUP_SIZE_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SupertileGroupSizeText',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
+                        name: 'BombRadius',
+                        createElement: _ => new Container,
+                        position: [WIDTH / 2, 700],
+                        children: [
+                            {
+                                name: 'BombRadiusLabel',
+                                createElement: () => new Text('Bomb\nradius', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 50 })),
+                                anchor: [1, .5],
+                                position: [-165, -10],
+                            },
+                            {
+                                name: 'BombRadiusDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'BOMB_RADIUS_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'BombRadiusIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'BOMB_RADIUS_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'BombRadiusText',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
+                        name: 'BackButton',
+                        createElement: () => new TextButton({ normal: 'panel1' }, new Text('BACK', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                        events : [
+                            { elementEvent: "pressed", exposeEvent: 'BACK_BUTTON_PRESSED' }
+                        ],
+                        scale: 2,
+                        position: [WIDTH / 2, 1000],
+                        anchor: [.5, 1]
+                    },
                 ]
             },
         ],
         events: {
             onPlayButtonPressed: 'PLAY_BUTTON_PRESSED',
             onSettingsButtonPressed: 'SETTINGS_BUTTON_PRESSED',
+            onBackButtonPressed: 'BACK_BUTTON_PRESSED',
+
             onSizeXIncreased: 'SIZE_X_INCREASE_BUTTON_PRESSED',
             onSizeXDecreased: 'SIZE_X_DECREASE_BUTTON_PRESSED',
+
+            onSizeYIncreased: 'SIZE_Y_INCREASE_BUTTON_PRESSED',
+            onSizeYDecreased: 'SIZE_Y_DECREASE_BUTTON_PRESSED',
+
+            onColorsIncreased: 'COLORS_INCREASE_BUTTON_PRESSED',
+            onColorsDecreased: 'COLORS_DECREASE_BUTTON_PRESSED',
+
+            onColorsIncreased: 'COLORS_INCREASE_BUTTON_PRESSED',
+            onColorsDecreased: 'COLORS_DECREASE_BUTTON_PRESSED',
+
+            onSupertileGroupSizeIncreased: 'SUPERTILE_GROUP_SIZE_INCREASE_BUTTON_PRESSED',
+            onSupertileGroupSizeDecreased: 'SUPERTILE_GROUP_SIZE_DECREASE_BUTTON_PRESSED',
+
+            onBombRadiusIncreased: 'BOMB_RADIUS_INCREASE_BUTTON_PRESSED',
+            onBombRadiusDecreased: 'BOMB_RADIUS_DECREASE_BUTTON_PRESSED',
         },
     },
     gameScreen: {

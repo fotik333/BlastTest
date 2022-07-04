@@ -5,12 +5,17 @@ class Screen extends Container {
     isScreen = true;
 
     #inflated = false;
+    #layout;
 
     constructor(layoutConfig) {
         super();
 
         this.sortableChildren = true;
         if (layoutConfig) this.inflate(layoutConfig);
+    }
+
+    get layout() {
+        return this.#layout;
     }
 
     inflate(layoutConfig) {
@@ -23,6 +28,7 @@ class Screen extends Container {
 		});
         
         this.#inflated = true;
+        this.#layout = layoutConfig;
     }
 
     _applyChild(childConfig, parent) {
