@@ -130,8 +130,6 @@ class HUDControllerComponent extends Component {
     onDestroy() {
         this.#gameField.off(GameFieldComponent.STEP_DONE, this.onStepDone.bind(this));
         this.#gameField.off(GameFieldComponent.TILES_BURNED, this.onTilesBurned.bind(this));
-
-        this.#screen.removeAllListeners();
     }
 }
 

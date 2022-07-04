@@ -52,8 +52,6 @@ class BoostersControllerComponent extends Component {
 
     onDestroy() {
         this._disableAllButtons();
-
-        this.#screen.removeAllListeners();
     }
 }
 

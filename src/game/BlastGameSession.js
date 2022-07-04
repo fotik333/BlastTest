@@ -114,6 +114,8 @@ export default class BlastGameSession extends GameSession {
         super.finish();
 
         this.#gameFieldBGGraphics.clear();
+
+        this.screen.removeAllListeners();
         
         this.#hudController.off(HUDControllerComponent.WIN, this.onWin.bind(this));
         this.#hudController.off(HUDControllerComponent.LOSE, this.onLose.bind(this));

@@ -10,7 +10,7 @@ class GameSettings {
 
         useSupertile: true,
 
-        goal: 200,
+        goal: 500,
 
         supertileMinGroupSize: 4,
         blendsMaxCount: 3,

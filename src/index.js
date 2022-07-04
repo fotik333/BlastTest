@@ -11,8 +11,8 @@ global.PAUSED = false;
 
 function animate(time) {
 	requestAnimationFrame(animate);
-	
-	if (!global.PAUSED) {
+
+	if (!PAUSED) {
 		TWEEN.update(time);
 	}
 }

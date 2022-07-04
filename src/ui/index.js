@@ -1,4 +1,4 @@
-import Button from "../core/Button";
+import Button from "./Button";
 import CheckBox from "./CheckBox";
 import TextButton from "./TextButton";
 import BoosterButton from "./BoosterButton";
