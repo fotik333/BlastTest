@@ -1,15 +1,12 @@
 import GameSession from "../core/GameSession";
-import { layoutConfig, WIDTH, HEIGHT } from '../config/layout';
+import { layoutConfig, MAX_FIELD_SIZE } from '../config/layout';
 import GameObject from "../core/GameObject";
 import { DisplayObjectComponent, GameFieldAnimatorComponent, GameFieldComponent } from '../components';
-import { Graphics, Container } from "pixi.js";
+import { Container } from "pixi.js";
 import { createSprite } from '../utils/utils.js';
 import BoostersControllerComponent from "../components/BoostersControllerComponent";
 import HUDControllerComponent from "../components/HUDControllerComponent";
 import GameSettings from "../GameSettings";
-
-const maxWidth = 700;
-const maxHeight = 700;
 
 export default class BlastGameSession extends GameSession {
     #layout = layoutConfig.gameScreen;
@@ -39,24 +36,44 @@ export default class BlastGameSession extends GameSession {
             this.#gameField
         ];
 
+        let gameFieldGameObject = new GameObject('GameField', components);
+        this._configureGameFieldTransform(gameFieldGameObject);
+    }
+
+    _initUI() {
+        let boostersController = new BoostersControllerComponent(this.screen, this.#layout);
+        this.#hudController = new HUDControllerComponent(this.screen, this.#layout);
+        
+        let components = [
+            boostersController,
+            this.#hudController
+        ];
+
+        new GameObject('UI', components);
+
+        this.#hudController.on(HUDControllerComponent.WIN, this._onWin.bind(this));
+        this.#hudController.on(HUDControllerComponent.LOSE, this._onLose.bind(this));
+        this.#hudController.on(HUDControllerComponent.RETURN_TO_MENU, this._onReturnToMenu.bind(this));
+    }
+
+    _configureGameFieldTransform(gameField) {
         let tileSprite = createSprite({ texture: 'tile' });
         let offsetX = tileSprite.width;
         let offsetY = tileSprite.height;
 
-        let gameFieldGameObject = new GameObject('GameField', components);
-
         let sizeX = GameSettings.CurrentSettings.sizeX;
         let sizeY = GameSettings.CurrentSettings.sizeY;
 
-        let widthRatio = maxWidth / (sizeX * offsetX);
-        let heightRatio = maxHeight / (sizeY * offsetY);
+        let widthRatio = MAX_FIELD_SIZE / (sizeX * offsetX);
+        let heightRatio = MAX_FIELD_SIZE / (sizeY * offsetY);
         let ratio = Math.min(widthRatio, heightRatio);
 
-        gameFieldGameObject.transform.scale = { x: ratio, y: ratio };
+        gameField.transform.scale = { x: ratio, y: ratio };
+        
         let startX = 150 + offsetX * ratio;
         let startY = 150 + offsetY * ratio;
 
-        gameFieldGameObject.transform.position = { x: startX, y: startY };
+        gameField.transform.position = { x: startX, y: startY };
 
         offsetX = offsetX * ratio;
         offsetY = offsetY * ratio;
@@ -82,31 +99,15 @@ export default class BlastGameSession extends GameSession {
         this.#gameFieldBGGraphics = gameFieldBGGraphics;
     }
 
-    _initUI() {
-        let boostersController = new BoostersControllerComponent(this.screen, this.#layout);
-        this.#hudController = new HUDControllerComponent(this.screen, this.#layout);
-        
-        let components = [
-            boostersController,
-            this.#hudController
-        ];
-
-        new GameObject('UI', components);
-
-        this.#hudController.on(HUDControllerComponent.WIN, this.onWin.bind(this));
-        this.#hudController.on(HUDControllerComponent.LOSE, this.onLose.bind(this));
-        this.#hudController.on(HUDControllerComponent.RETURN_TO_MENU, this.onReturnToMenu.bind(this));
-    }
-
-    onReturnToMenu() {
+    _onReturnToMenu() {
         this.emit(GameSession.RETURN_TO_MENU);
     }
 
-    onWin() {
+    _onWin() {
         this.emit(GameSession.SESSION_END, true);
     }
 
-    onLose() {
+    _onLose() {
         this.emit(GameSession.SESSION_END, false);
     }
 
@@ -117,8 +118,8 @@ export default class BlastGameSession extends GameSession {
 
         this.screen.removeAllListeners();
         
-        this.#hudController.off(HUDControllerComponent.WIN, this.onWin.bind(this));
-        this.#hudController.off(HUDControllerComponent.LOSE, this.onLose.bind(this));
-        this.#hudController.off(HUDControllerComponent.RETURN_TO_MENU, this.onReturnToMenu.bind(this));
+        this.#hudController.off(HUDControllerComponent.WIN, this._onWin.bind(this));
+        this.#hudController.off(HUDControllerComponent.LOSE, this._onLose.bind(this));
+        this.#hudController.off(HUDControllerComponent.RETURN_TO_MENU, this._onReturnToMenu.bind(this));
     }
 }

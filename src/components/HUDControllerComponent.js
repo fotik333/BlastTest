@@ -1,6 +1,5 @@
 import Component from "../core/Component";
 import GameWorld from "../core/GameWorld";
-import Game from '../Game';
 import GameSettings from "../GameSettings";
 import GameFieldComponent from "./GameFieldComponent";
 import { Tween, Easing } from "@tweenjs/tween.js";

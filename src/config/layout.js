@@ -1,11 +1,12 @@
-import { Button, TextButton, Timer, BoosterButton, ProgressBar } from '../ui';
-import { Text, TextStyle, Graphics, Container, TextInput } from 'pixi.js';
-import { GlowFilter } from '@pixi/filter-glow';
+import { TextButton, BoosterButton, ProgressBar } from '../ui';
+import { Text, TextStyle, Graphics, Container } from 'pixi.js';
 import { createSprite } from '../utils/utils';
 import GameSettings from '../GameSettings';
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
+
+const MAX_FIELD_SIZE = 700;
 
 const MENU_SCENE = "MENU";
 const RESULT_SCENE = "RESULT";
@@ -538,4 +539,4 @@ const layoutConfig = {
     },
 };
 
-export { layoutConfig, WIDTH, HEIGHT, MENU_SCENE, RESULT_SCENE, GAME_SCENE };
+export { layoutConfig, WIDTH, HEIGHT, MENU_SCENE, RESULT_SCENE, GAME_SCENE, MAX_FIELD_SIZE };

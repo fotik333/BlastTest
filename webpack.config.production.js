@@ -43,10 +43,10 @@ module.exports = {
           PIXI: 'pixi.js'
         }),
         new HTMLWebpackPlugin({
-            // inlineSource: '.js',
+            inlineSource: '.js',
             template: 'build/index.html',
             filename: 'index.html',
         }),
-        // new HtmlWebpackInlineSourcePlugin()
+        new HtmlWebpackInlineSourcePlugin()
     ],
 };

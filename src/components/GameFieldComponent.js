@@ -347,7 +347,7 @@ class GameFieldComponent extends Component {
             for (let emptyCount = col.length - counter; emptyCount >= 0; emptyCount--) {
                 let tileId = newTiles.pop();
                 let tileInfo = this.#tilesMap[tileId];
-                let type = this.generateType();
+                let type = this._generateType();
 
                 col[emptyCount] = { id: tileId, type };
 
@@ -368,7 +368,7 @@ class GameFieldComponent extends Component {
         });
     }
 
-    generateType() {
+    _generateType() {
         return Math.floor(Math.random() * GameSettings.CurrentSettings.typesCount);
     }
 
@@ -383,7 +383,7 @@ class GameFieldComponent extends Component {
             for (let row = 0; row < this.#sizeY; row++) {
                 if (!this.#tilesMatrix[col]) this.#tilesMatrix[col] = [];
                 
-                let type = this.generateType();
+                let type = this._generateType();
 
                 this.#tilesMatrix[col][row] = { type, id };
                 this.#tilesMap[id] = { col, row, type };

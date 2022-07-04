@@ -1,6 +1,5 @@
 import Component from "../core/Component";
 import { DisplayObjectComponent, GameFieldComponent } from ".";
-import Game from "../Game";
 import { Tween, Easing } from "@tweenjs/tween.js";
 import GameSettings from "../GameSettings";
 import { createSprite } from "../utils/utils";

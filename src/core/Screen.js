@@ -1,5 +1,4 @@
 import { Container } from 'pixi.js';
-import { layoutConfig } from '../config/layout';
 
 class Screen extends Container {
     isScreen = true;

@@ -10,11 +10,11 @@ class GameSettings {
 
         useSupertile: true,
 
-        goal: 500,
+        goal: 1000,
 
         supertileMinGroupSize: 4,
         blendsMaxCount: 3,
-        stepsCount: 10,
+        stepsCount: 20,
 
         getScoreByCount: count => {
             return count * count;

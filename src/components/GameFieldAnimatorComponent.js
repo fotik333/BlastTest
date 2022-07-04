@@ -139,7 +139,7 @@ class GameFieldAnimatorComponent extends Component {
         this.#animationPlaying = false;
     }
 
-    onTilePressed(id) {
+    _onTilePressed(id) {
         if (this.#animationPlaying) return;
 
         this.#gameField.onTilePressed(id);
@@ -158,7 +158,7 @@ class GameFieldAnimatorComponent extends Component {
             tileComponent.setType(tileInfo.type);
 
             let tileInputComponent = tile.getComponent(TileInputComponent);
-            tileInputComponent.on(TileInputComponent.TILE_PRESSED, _ => this.onTilePressed(id));
+            tileInputComponent.on(TileInputComponent.TILE_PRESSED, _ => this._onTilePressed(id));
 
             this.#tilesMap[id] = tileComponent;
         });
@@ -181,7 +181,7 @@ class GameFieldAnimatorComponent extends Component {
     }
 
     onDestroy() {
-        // this.#destroyed = true;
+        this.#destroyed = true;
     }
 }
 

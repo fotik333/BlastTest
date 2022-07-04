@@ -1,5 +1,4 @@
 import Screen from "../core/Screen";
-import GameSettings from "../GameSettings";
 
 class MenuScreen extends Screen {
     constructor(layoutConfig, gameSettings) {
@@ -19,10 +18,10 @@ class MenuScreen extends Screen {
         });
     
         
-        this._initializeSettings(gameSettings);
+        this._initializeSettingsUI(gameSettings);
     }
 
-    _initializeSettings(gameSettings) {
+    _initializeSettingsUI(gameSettings) {
         let sizeXText = this.getChildByName('SizeXText', true);
         sizeXText.text = gameSettings.sizeX;
 
