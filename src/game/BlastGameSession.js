@@ -8,7 +8,7 @@ import BoostersControllerComponent from "../components/BoostersControllerCompone
 import HUDControllerComponent from "../components/HUDControllerComponent";
 import GameSettings from "../GameSettings";
 
-const maxWidth = 800;
+const maxWidth = 700;
 const maxHeight = 700;
 
 export default class BlastGameSession extends GameSession {
@@ -45,7 +45,6 @@ export default class BlastGameSession extends GameSession {
 
         let gameFieldGameObject = new GameObject('GameField', components);
 
-        //TODO move to where?
         let sizeX = GameSettings.CurrentSettings.sizeX;
         let sizeY = GameSettings.CurrentSettings.sizeY;
 

@@ -70,9 +70,11 @@ class HUDControllerComponent extends Component {
 
     onPausePressed() {
         this.#pauseScreen.visible = !this.#pauseScreen.visible;
+        PAUSED = this.#pauseScreen.visible;
     }
 
     onPauseMenuPressed() {
+        PAUSED = false;
         this.emit(HUDControllerComponent.RETURN_TO_MENU);
         this.#pauseScreen.visible = false;
     }

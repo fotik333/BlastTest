@@ -7,10 +7,14 @@ const TWEEN = require('@tweenjs/tween.js');
 
 global.PIXI = PIXI;
 global.TWEEN = TWEEN;
+global.PAUSED = false;
 
 function animate(time) {
 	requestAnimationFrame(animate);
-	TWEEN.update(time);
+	
+	if (!global.PAUSED) {
+		TWEEN.update(time);
+	}
 }
 
 requestAnimationFrame(animate);

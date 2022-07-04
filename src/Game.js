@@ -8,9 +8,6 @@ import GameSettings from './GameSettings';
 import MenuScreen from './ui/MenuScreen';
 import SceneTransition from './ui/SceneTransition';
 
-//TODO fix group imports
-//TODO rename events
-
 class Game extends Container {
 	static strategies = [
 		{

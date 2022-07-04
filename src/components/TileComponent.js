@@ -8,7 +8,7 @@ import { createSprite } from "../utils/utils";
 let offsetX = 185;
 let offsetY = 215;
 
-class TileComponent extends Component { //TODO ZINDEX
+class TileComponent extends Component {
     #transform;
     #displayObject;
     #animation;
@@ -34,7 +34,7 @@ class TileComponent extends Component { //TODO ZINDEX
     }
 
     superTile(type) {
-        switch(type) { //TODO
+        switch(type) {
             case GameFieldComponent.SUPERTILE_COL_TYPE:
                 this.#arrow.rotation = 0;
                 break;

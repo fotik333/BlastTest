@@ -131,7 +131,6 @@ class GameFieldAnimatorComponent extends Component {
         let isCombinationExists = this.#gameField.checkCombinations();
 
         if (!isCombinationExists) {
-            //TODO ограничить перемешивания
             this.#gameField.shuffle();
             this._updateField();
             return;

@@ -3,7 +3,6 @@ import GameWorld from "../core/GameWorld";
 import Game from '../Game';
 import GameFieldComponent from "./GameFieldComponent";
 
-
 class BoostersControllerComponent extends Component {
     #screen;
     #layout;

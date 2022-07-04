@@ -25,10 +25,6 @@ class GameWorld {
 
     tick(dt) {
         this.gameObjects.forEach(go => go.tick(dt));
-        
-        //TODO
-        // this.gameTime += dt * 1000 / 60;
-        // TWEEN.update(this.gameTime);
     }
 
     findByName(name) {
