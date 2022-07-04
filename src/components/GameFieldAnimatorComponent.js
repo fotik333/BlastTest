@@ -10,11 +10,16 @@ class GameFieldAnimatorComponent extends Component {
     #tilesMap = {};
     #container;
     #animationPlaying = false;
+    #destroyed = false;
 
     constructor(gameField) {
         super();
 
         this.#gameField = gameField;
+    }
+
+    get animationPlaying() {
+        return this.#animationPlaying;
     }
 
     onAwake() {
@@ -42,6 +47,8 @@ class GameFieldAnimatorComponent extends Component {
         await waiter(100);
 
         this.#animationPlaying = false;
+
+        if (this.#destroyed) return;
         
         this._updateField();
     }
@@ -96,6 +103,7 @@ class GameFieldAnimatorComponent extends Component {
         }
 
         await waiter(150);
+        if (this.#destroyed) return;
 
         movedTiles.forEach(tileInfo => {
             let tile = this.#tilesMap[tileInfo.id];
@@ -103,6 +111,7 @@ class GameFieldAnimatorComponent extends Component {
         });
 
         await waiter(50);
+        if (this.#destroyed) return;
 
         newTiles.forEach(tileInfo => {
             let tile = this.#tilesMap[tileInfo.id];
@@ -112,7 +121,8 @@ class GameFieldAnimatorComponent extends Component {
 
         this.#gameField.clearFlags();
 
-        await waiter(100);
+        await waiter(200);
+        if (this.#destroyed) return;
         
         this._checkCombinations();
     }
@@ -169,6 +179,10 @@ class GameFieldAnimatorComponent extends Component {
         let tile = new GameObject('Tile', components);
 
         return tile;
+    }
+
+    onDestroy() {
+        // this.#destroyed = true;
     }
 }
 

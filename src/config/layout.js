@@ -1,4 +1,4 @@
-import { Button, TextButton, Timer, BoosterButton } from '../ui';
+import { Button, TextButton, Timer, BoosterButton, ProgressBar } from '../ui';
 import { Text, TextStyle, Graphics, Container, TextInput } from 'pixi.js';
 import { GlowFilter } from '@pixi/filter-glow';
 import { createSprite } from '../utils/utils';
@@ -242,6 +242,84 @@ const layoutConfig = {
                         ]
                     },
                     {
+                        name: 'StepsCount',
+                        createElement: _ => new Container,
+                        position: [WIDTH  - 300, HEIGHT / 2 - 200],
+                        children: [
+                            {
+                                name: 'StepsCountLabel',
+                                createElement: () => new Text('Steps', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [1, .5],
+                                position: [-165, -10],
+                            },
+                            {
+                                name: 'StepsCountDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'STEPS_COUNT_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'StepsCountIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'STEPS_COUNT_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'StepsCountText',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
+                        name: 'ScoreGoal',
+                        createElement: _ => new Container,
+                        position: [WIDTH  - 300, HEIGHT / 2 - 50],
+                        children: [
+                            {
+                                name: 'ScoreGoalLabel',
+                                createElement: () => new Text('Goal', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [1, .5],
+                                position: [-220, -10],
+                            },
+                            {
+                                name: 'ScoreGoalDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-150, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'GOAL_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'ScoreGoalIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [150, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'GOAL_INCREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'ScoreGoalText',
+                                createElement: () => new Text('5000', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 70 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    },
+                    {
                         name: 'BackButton',
                         createElement: () => new TextButton({ normal: 'panel1' }, new Text('BACK', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
                         events : [
@@ -276,24 +354,78 @@ const layoutConfig = {
 
             onBombRadiusIncreased: 'BOMB_RADIUS_INCREASE_BUTTON_PRESSED',
             onBombRadiusDecreased: 'BOMB_RADIUS_DECREASE_BUTTON_PRESSED',
+
+            onStepsCountIncreased: 'STEPS_COUNT_INCREASE_BUTTON_PRESSED',
+            onStepsCountDecreased: 'STEPS_COUNT_DECREASE_BUTTON_PRESSED',
+
+            onGoalIncreased: 'GOAL_INCREASE_BUTTON_PRESSED',
+            onGoalDecreased: 'GOAL_DECREASE_BUTTON_PRESSED',
         },
     },
     gameScreen: {
         screenName: GAME_SCENE,
         children: [
             {
+                name: 'ProgressBar',
+                createElement: _ => new ProgressBar,
+                position: [500, 20],
+            },
+            {
+                name: 'GoalContainer',
+                createElement: _ => new Container,
+                position: [1300, 100],
+                children: [
+                    {
+                        name: 'GoalBG',
+                        createElement: _ => createSprite({ texture: 'panel2'}),
+                        anchor: [.5, .5],
+                        position: [0, -18]
+                    },
+                    {
+                        name: 'GoalLabel',
+                        createElement: _ => new Text('GOAL:', { fill: '#0d233d', fontSize: 60, fontFamily: 'LuckiestGuy' }),
+                        anchor: [1, .5],
+                        position: [-140, -25]
+                    },
+                    {
+                        name: 'GoalText',
+                        createElement: _ => new Text('0', { fill: '#ffffff', fontSize: 60, fontFamily: 'LuckiestGuy' }),
+                        anchor: [.5, .5],
+                        position: [0, -25]
+                    }
+                ]
+            },
+            {
                 name: 'ScoreField',
-                layer: 'UI',
                 createElement: () => createSprite({ texture: 'score_panel_bg'}),
                 events: [
                     { elementEvent: "pressed", exposeEvent: 'BOMB_BUTTON_PRESSED' }
                 ],
                 anchor: [.5, .5],
                 position: [1300, HEIGHT / 2 - 100],
+                children: [
+                    {
+                        name: 'StepsCount',
+                        createElement: _ => new Text('10', { fill: '#ffffff', fontSize: 150, fontFamily: 'LuckiestGuy' }),
+                        anchor: [.5, .5],
+                        position: [0, -125]
+                    },
+                    {
+                        name: 'ScoreLabel',
+                        createElement: _ => new Text('SCORE:', { fill: '#ffffff', fontSize: 60, fontFamily: 'LuckiestGuy' }),
+                        anchor: [.5, .5],
+                        position: [0, 85]
+                    },
+                    {
+                        name: 'Score',
+                        createElement: _ => new Text('0', { fill: '#ffffff', fontSize: 80, fontFamily: 'LuckiestGuy' }),
+                        anchor: [.5, .5],
+                        position: [0, 160]
+                    }
+                ]
             },
             {
                 name: 'BoosterBombButton',
-                layer: 'UI',
                 createElement: () => new BoosterButton(
                     { normal: 'bonus_bg' },
                     new Text('Bomb', { fill: '#ffffff', fontSize: 60, fontFamily: 'LuckiestGuy' }),
@@ -329,10 +461,44 @@ const layoutConfig = {
                 layer: 'UI',
                 createElement: () => new Graphics
             },
+            {
+                name: 'PauseScreen',
+                visible: false,
+                createElement: _ => new Container,
+                children: [
+                    {
+                        name: 'PauseScreenBG',
+                        createElement: _ => new Graphics().beginFill(0x000000, 0.5).drawRect(0, 0, WIDTH, HEIGHT).endFill(),
+                        interactive: true,
+                    },
+                    {
+                        name: 'PauseScreenMenuButton',
+                        createElement: _ => new TextButton({ normal: 'panel1' }, new Text('MENU', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -7),
+                        events : [
+                            { elementEvent: "pressed", exposeEvent: 'PAUSE_MENU_BUTTON_PRESSED' }
+                        ],
+                        interactive: true,
+                        scale: 2,
+                        position: [WIDTH / 2, HEIGHT / 2],
+                        anchor: [.5, .5]
+                    }
+                ]
+            },
+            {
+                name: 'PauseButton',
+                createElement: () => new TextButton({ normal: 'small_button' }, new Text('| |', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 70 })), -15),
+                events: [
+                    { elementEvent: "pressed", exposeEvent: 'PAUSE_BUTTON_PRESSED' }
+                ],
+                position: [WIDTH - 100, 100],
+                anchor: [.5, .5]
+            },
         ],
         events: {
             onSwapButtonPressed: 'SWAP_BUTTON_PRESSED',
             onBombButtonPressed: 'BOMB_BUTTON_PRESSED',
+            onPauseButtonPressed: 'PAUSE_BUTTON_PRESSED',
+            onPauseMenuButtonPressed: 'PAUSE_MENU_BUTTON_PRESSED',
         }
     },
     resultScreen: {
@@ -340,29 +506,29 @@ const layoutConfig = {
         children: [
             {
                 name: 'RestartButton',
-                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('RESTART', new TextStyle({ fill: '#000099' })), -26),
-                events: [
+                createElement: () => new TextButton({ normal: 'panel1' }, new Text('RESTART', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                events : [
                     { elementEvent: "pressed", exposeEvent: 'RESTART_BUTTON_PRESSED' }
                 ],
                 scale: 2,
-                position: [WIDTH / 2, HEIGHT / 2 - 110],
+                position: [WIDTH / 2, HEIGHT / 2 + 200],
                 anchor: [.5, 1]
             },
             {
                 name: 'MenuButton',
-                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('MENU', new TextStyle({ fill: '#000099' })), -26),
-                events: [
+                createElement: () => new TextButton({ normal: 'panel1' }, new Text('MENU', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                events : [
                     { elementEvent: "pressed", exposeEvent: 'MENU_BUTTON_PRESSED' }
                 ],
                 scale: 2,
-                position: [WIDTH / 2, HEIGHT / 2 + 190],
+                position: [WIDTH / 2, HEIGHT / 2 - 30],
                 anchor: [.5, 1]
             },
             {
                 name: 'ResultText',
-                createElement: () => new Text('XYU', new TextStyle({ fill: '#5555ff', fontSize: 80 })),
-                position: [WIDTH / 2, HEIGHT / 2],
-                anchor: [.5, .5]
+                createElement: () => new Text('', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 150 })),
+                position: [WIDTH / 2, 250],
+                anchor: [.5, 1]
             },
         ],
         events: {

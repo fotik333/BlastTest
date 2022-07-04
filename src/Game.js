@@ -3,10 +3,10 @@ import Screen from './core/Screen';
 import { layoutConfig, HEIGHT, WIDTH, MENU_SCENE, RESULT_SCENE, GAME_SCENE } from './config/layout';
 import BlastGameSession from './game/BlastGameSession';
 import GameSession from "./core/GameSession";
-import { createSprite } from './utils/utils.js';
 import { BombBlastStrategy, SwapBlastStrategy, DefaultBlastStrategy } from './strategy';
 import GameSettings from './GameSettings';
 import MenuScreen from './ui/MenuScreen';
+import SceneTransition from './ui/SceneTransition';
 
 //TODO fix group imports
 //TODO rename events
@@ -42,23 +42,27 @@ class Game extends Container {
 		}
     ];
 
+	#transition;
+
 	constructor() {
 		super();
 
-		// this.addChild(createSprite({ texture: 'background', width: WIDTH, height: HEIGHT}));
-		//56ccc6
+		this.sortableChildren = true;
+
 		this.addChild(new Graphics().beginFill(0x56ccc6, 1).drawRect(0, 0, WIDTH, HEIGHT).endFill());
 		this.mask = this.addChild(new Graphics().beginFill(0xff0000, 0.5).drawRect(0, 0, WIDTH, HEIGHT).endFill());
 
 		this._initScenes();
 
-		this._switchScreen(MENU_SCENE);
+		this._switchScreen(MENU_SCENE, true);
 	}
 
 	_initScenes() {
 		let gameSettings = new GameSettings;
+		
+		this.#transition = this.addChild(new SceneTransition);
+		this.#transition.zIndex = 1000;
 
-		//TODO menu scene
 		this._menuScreen = this.addChild(new MenuScreen(layoutConfig.menuScreen, gameSettings));
         this._menuScreen.on(layoutConfig.menuScreen.events.onPlayButtonPressed, this._onPlayButtonPressed.bind(this));
 
@@ -67,20 +71,25 @@ class Game extends Container {
         this._resultScreen.on(layoutConfig.resultScreen.events.onRestartButtonPressed, this._onRestartButtonPressed.bind(this));
 
 		this._gameScreen = this.addChild(new Screen());
-
-		//TODO transition
 	}
 
-	_switchScreen(screenName) {
-		this.children.forEach(child => {
-			if (!child.isScreen) return;
+	_switchScreen(screenName, instant = false) {
+		this.#transition.transit(_ => {
+			this.children.forEach(child => {
+				if (!child.isScreen) return;
 
-			child.visible = child.name === screenName;
-		});
+				child.visible = child.name === screenName;
+			})
+		}, instant);
 	}
 
 	_selectGameSession() {
 		return new BlastGameSession(this._gameScreen);
+	}
+
+	_onReturnToMenu() {
+		this._gameSession.finish();
+		this._switchScreen(MENU_SCENE);
 	}
 
 	_startGameSession() {
@@ -89,14 +98,17 @@ class Game extends Container {
 		this._switchScreen(GAME_SCENE);
 
 		this._gameSession.on(GameSession.SESSION_END, this._finishGameSession.bind(this));
+		this._gameSession.on(GameSession.RETURN_TO_MENU, this._onReturnToMenu.bind(this));
+
 		this._gameSession.start();
 	}
 
 	_finishGameSession(isWin) {
-		//TODO restart
 		this._gameSession.finish();
 		
 		this._gameSession.off(GameSession.SESSION_END, this._finishGameSession.bind(this));
+		this._gameSession.off(GameSession.RETURN_TO_MENU, this._onReturnToMenu.bind(this));
+
 		this._resultScreen.getChildByName('ResultText').text = `YOU ${isWin ? 'WIN' : 'LOSE'}`;
 		this._switchScreen(RESULT_SCENE);
 	}
@@ -120,9 +132,11 @@ class Game extends Container {
 	resize() {
 		let width = window.getSize().width;
 		let height = window.getSize().height;
+		let ratio = Math.min(width / WIDTH, height / HEIGHT);
 		
-		this.scale.set(width / WIDTH);
+		this.scale.set(ratio);
 		this.position.y = height / 2 - HEIGHT * this.scale.x / 2;
+		this.position.x = width / 2 - WIDTH * this.scale.x / 2;
 	}
 }
 

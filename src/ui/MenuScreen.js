@@ -45,7 +45,6 @@ class MenuScreen extends Screen {
         });
 
         this.on(this.layout.events.onSizeYDecreased, _ => {
-            console.log(gameSettings.sizeY)
             gameSettings.sizeY = gameSettings.sizeY - 1;
             sizeYText.text = gameSettings.sizeY;
         });
@@ -87,6 +86,32 @@ class MenuScreen extends Screen {
         this.on(this.layout.events.onBombRadiusDecreased, _ => {
             gameSettings.bombRadius = gameSettings.bombRadius - 1;
             bombRadiusText.text = gameSettings.bombRadius;
+        });
+
+        let stepsText = this.getChildByName('StepsCountText', true);
+        stepsText.text = gameSettings.stepsCount;
+
+        this.on(this.layout.events.onStepsCountIncreased, _ => {
+            gameSettings.stepsCount = gameSettings.stepsCount + 1;
+            stepsText.text = gameSettings.stepsCount;
+        });
+
+        this.on(this.layout.events.onStepsCountDecreased, _ => {
+            gameSettings.stepsCount = gameSettings.stepsCount - 1;
+            stepsText.text = gameSettings.stepsCount;
+        });
+
+        let goalText = this.getChildByName('ScoreGoalText', true);
+        goalText.text = gameSettings.goal;
+
+        this.on(this.layout.events.onGoalIncreased, _ => {
+            gameSettings.goal = gameSettings.goal + 10;
+            goalText.text = gameSettings.goal;
+        });
+
+        this.on(this.layout.events.onGoalDecreased, _ => {
+            gameSettings.goal = gameSettings.goal - 10;
+            goalText.text = gameSettings.goal;
         });
     }
 }

@@ -81,7 +81,7 @@ class TileComponent extends Component { //TODO ZINDEX
 
         let obj = { value: 0 };
 
-        new Tween(obj).to({ value: 1 }, 200).easing(Easing.Sinusoidal.Out).onUpdate(_ => this.#transform.position = {
+        this.#animation = new Tween(obj).to({ value: 1 }, 200).easing(Easing.Sinusoidal.Out).onUpdate(_ => this.#transform.position = {
             x: col * offsetX,
             y: (row - 10) * offsetY + (row * offsetY - (row - 10) * offsetY) * obj.value,
         }).onStart(_ => {
@@ -97,7 +97,7 @@ class TileComponent extends Component { //TODO ZINDEX
         let currentPosition = this.#transform.position;
         let obj = { value: 0 };
 
-        new Tween(obj).to({ value: 1 }, 200).onUpdate(_ => this.#transform.position = {
+        this.#animation = new Tween(obj).to({ value: 1 }, 200).onUpdate(_ => this.#transform.position = {
             x: currentPosition.x + (col * offsetX - currentPosition.x) * obj.value,
             y: currentPosition.y + (row * offsetY - currentPosition.y) * obj.value,
         }).start();
@@ -120,6 +120,10 @@ class TileComponent extends Component { //TODO ZINDEX
     setType(type) {
         this.type = type;
         this.#displayObject.tint = GameSettings.CurrentSettings.colors[type];
+    }
+
+    onDestroy() {
+        this.#animation && this.#animation.stop();
     }
 }
 

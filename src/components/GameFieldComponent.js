@@ -6,6 +6,9 @@ class GameFieldComponent extends Component {
     static SUPERTILE_ROW_TYPE;
     static SUPERTILE_COL_TYPE;
 
+    static TILES_BURNED = 'TilesBurned';
+    static STEP_DONE = 'StepDone';
+
     #sizeX
     #sizeY;
     #tilesMatrix = [[]];
@@ -82,16 +85,32 @@ class GameFieldComponent extends Component {
         }
     }
 
+    getTilesCount(result) {
+        let count = 0;
+        result.forEach(ids => ids.forEach(_ => count++));
+        return count;
+    }
+
     onTilePressed(tileId) {
-        let wasGameFieldUpdated = this.#currentStrategy.onTilePressed(tileId);
+        let strategyResult = this.#currentStrategy.onTilePressed(tileId);
         
-        if (wasGameFieldUpdated) {
+        if (strategyResult.wasGameFieldUpdated) {
             this.#strategyApplyCallback && this.#strategyApplyCallback();
             this.#strategyApplyCallback = null;
             this.enableDefaultStrategy();
         }
         
-        this.updateField();
+        let burnedTilesCount = strategyResult.burnedTilesCount;
+
+        if (burnedTilesCount > 0) {
+            this.emit(GameFieldComponent.TILES_BURNED, burnedTilesCount);
+        }
+
+        if (strategyResult.stepDone) {
+            this.emit(GameFieldComponent.STEP_DONE);
+        }
+        
+        this._updateFieldAfterStrategyApplied();
     }
 
     shuffle() {
@@ -136,6 +155,7 @@ class GameFieldComponent extends Component {
 
         for (let i = 0; i < this.#sizeX; i++) {
             for (let j = 0; j < this.#sizeY; j++) {
+
                 let tmp = (col - i) * (col - i) + (row - j) * (row - j);
 
                 if ((col - i) * (col - i) + (row - j) * (row - j) <= radius * radius) {
@@ -146,6 +166,7 @@ class GameFieldComponent extends Component {
                     let tile = this.#tilesMatrix[i][j];
                     tile.burned = true;
 
+                    if (col === i && row === j) continue;
                     result[index].push(tile.id);
                 }
             }
@@ -293,7 +314,7 @@ class GameFieldComponent extends Component {
         ];
     }
 
-    updateField() {
+    _updateFieldAfterStrategyApplied() {
         for (let i = 0; i < this.#tilesMatrix.length; i++) {
             let col = this.#tilesMatrix[i];
 

@@ -6,17 +6,39 @@ class GameSettings {
         colors: [],
         minGroupSize: 2,
 
-        bombRadius: 3,
+        bombRadius: 1,
 
         useSupertile: true,
 
+        goal: 200,
+
         supertileMinGroupSize: 4,
         blendsMaxCount: 3,
-        stepsCount: 3
+        stepsCount: 10,
+
+        getScoreByCount: count => {
+            return count * count;
+        }
     };
 
     constructor() {
         this.generateColors();
+    }
+
+    set stepsCount(value) {
+        GameSettings.CurrentSettings.stepsCount = (value > 0 ? value : 1);
+    }
+
+    get stepsCount() {
+        return GameSettings.CurrentSettings.stepsCount;
+    }
+
+    set goal(value) {
+        GameSettings.CurrentSettings.goal = (value > 0 ? value : 10);
+    }
+
+    get goal() {
+        return GameSettings.CurrentSettings.goal;
     }
 
     set bombRadius(value) {

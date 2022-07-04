@@ -14,6 +14,8 @@ const maxHeight = 700;
 export default class BlastGameSession extends GameSession {
     #layout = layoutConfig.gameScreen;
     #gameField;
+    #hudController;
+    #gameFieldBGGraphics;
 
     constructor(screen) {
         super(screen);
@@ -43,49 +45,62 @@ export default class BlastGameSession extends GameSession {
 
         let gameFieldGameObject = new GameObject('GameField', components);
 
-        //TODO move to ?
+        //TODO move to where?
         let sizeX = GameSettings.CurrentSettings.sizeX;
         let sizeY = GameSettings.CurrentSettings.sizeY;
 
         let widthRatio = maxWidth / (sizeX * offsetX);
-        let heightRatio = maxWidth / (sizeY * offsetY);
+        let heightRatio = maxHeight / (sizeY * offsetY);
         let ratio = Math.min(widthRatio, heightRatio);
 
         gameFieldGameObject.transform.scale = { x: ratio, y: ratio };
-        gameFieldGameObject.transform.position = { x: 200, y: 250 };
+        let startX = 150 + offsetX * ratio;
+        let startY = 150 + offsetY * ratio;
+
+        gameFieldGameObject.transform.position = { x: startX, y: startY };
 
         offsetX = offsetX * ratio;
         offsetY = offsetY * ratio;
 
-        let gameFieldBG = this.screen.getChildByName('GameFieldBG');
+        let gameFieldBGGraphics = this.screen.getChildByName('GameFieldBG');
 
-        gameFieldBG.beginFill(0x9ed7e1).drawRoundedRect(
-            200 - 3 * offsetX / 4 - 20,
-            250 - 3 * offsetY / 4 - 20,
+        gameFieldBGGraphics.beginFill(0x9ed7e1).drawRoundedRect(
+            startX - 3 * offsetX / 4 - 20,
+            startY - 3 * offsetY / 4 - 20,
             sizeX * offsetX + offsetX / 2 + 40,
             sizeY * offsetY + offsetY / 2 + 40,
             offsetX / 4
         );
 
-        gameFieldBG.beginFill(0x0d233d).drawRoundedRect(
-            200 - 3 * offsetX / 4,
-            250 - 3 * offsetY / 4,
+        gameFieldBGGraphics.beginFill(0x0d233d).drawRoundedRect(
+            startX - 3 * offsetX / 4,
+            startY - 3 * offsetY / 4,
             sizeX * offsetX + offsetX / 2,
             sizeY * offsetY + offsetY / 2,
             offsetX / 4
         );
+        
+        this.#gameFieldBGGraphics = gameFieldBGGraphics;
     }
 
     _initUI() {
         let boostersController = new BoostersControllerComponent(this.screen, this.#layout);
-        let hudController = new HUDControllerComponent(this.screen, this.#layout);
+        this.#hudController = new HUDControllerComponent(this.screen, this.#layout);
         
         let components = [
             boostersController,
-            hudController
+            this.#hudController
         ];
 
         new GameObject('UI', components);
+
+        this.#hudController.on(HUDControllerComponent.WIN, this.onWin.bind(this));
+        this.#hudController.on(HUDControllerComponent.LOSE, this.onLose.bind(this));
+        this.#hudController.on(HUDControllerComponent.RETURN_TO_MENU, this.onReturnToMenu.bind(this));
+    }
+
+    onReturnToMenu() {
+        this.emit(GameSession.RETURN_TO_MENU);
     }
 
     onWin() {
@@ -94,5 +109,15 @@ export default class BlastGameSession extends GameSession {
 
     onLose() {
         this.emit(GameSession.SESSION_END, false);
+    }
+
+    finish() {
+        super.finish();
+
+        this.#gameFieldBGGraphics.clear();
+        
+        this.#hudController.off(HUDControllerComponent.WIN, this.onWin.bind(this));
+        this.#hudController.off(HUDControllerComponent.LOSE, this.onLose.bind(this));
+        this.#hudController.off(HUDControllerComponent.RETURN_TO_MENU, this.onReturnToMenu.bind(this));
     }
 }

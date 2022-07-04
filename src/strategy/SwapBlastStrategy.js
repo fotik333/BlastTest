@@ -1,5 +1,6 @@
 import { GameFieldAnimatorComponent } from "../components";
 import BlastStrategy from "./BlastStrategy";
+import StrategyResult from "./StrategyResult";
 
 class SwapBlastStrategy extends BlastStrategy {
 
@@ -24,14 +25,14 @@ class SwapBlastStrategy extends BlastStrategy {
             this.#firstSelectedTileId = tileId;
             
             this.#animator.swapStarted(this.#firstSelectedTileId);
-            return false;
+            return new StrategyResult(false, 0, false);
         }
 
         if (this.#firstSelectedTileId === tileId) {
             this.#firstSelectedTileId = null;
             
             this.#animator.swapCancelled(tileId);
-            return false;
+            return new StrategyResult(false, 0, false);
         }
 
         let swappedTilesInfo = this.gameField.swapTiles(this.#firstSelectedTileId, tileId);
@@ -39,7 +40,7 @@ class SwapBlastStrategy extends BlastStrategy {
 
         this.#animator.swap(swappedTilesInfo);
 
-        return true;
+        return new StrategyResult(true, 0, false);
     }
 };
 

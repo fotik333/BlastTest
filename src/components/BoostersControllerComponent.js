@@ -25,6 +25,7 @@ class BoostersControllerComponent extends Component {
             this.#boostersCounters[data.ID] = data.useCount;
 
             let button = this.#screen.getChildByName(data.buttonName);
+            button.setCountText(data.useCount);
             this.#buttons.push(button);
             
             let buttonPressEvent = data.getButtonPressEvent(this.#layout);
@@ -53,13 +54,7 @@ class BoostersControllerComponent extends Component {
     onDestroy() {
         this._disableAllButtons();
 
-        Game.boosters.forEach(data => {
-            let button = this.screen.getChildByName(data.buttonName);
-            let buttonPressEvent = data.getButtonPressEvent(this.#layout);
-            
-            // todo unsubscribe
-            //this.#screen.off(buttonPressEvent, this._onButtonPressed.bind(this, button, data.ID));
-        });
+        this.#screen.removeAllListeners();
     }
 }
 

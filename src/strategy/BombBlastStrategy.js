@@ -1,6 +1,7 @@
 import BlastStrategy from "./BlastStrategy";
 import { GameFieldAnimatorComponent } from "../components";
 import GameSettings from "../GameSettings";
+import StrategyResult from "./StrategyResult";
 
 class BombBlastStrategy extends BlastStrategy {
     #animator;
@@ -15,7 +16,8 @@ class BombBlastStrategy extends BlastStrategy {
 
         this.#animator.burn(result);
 
-        return true;
+        let count = this.gameField.getTilesCount(result);
+        return new StrategyResult(true, count, false);
     }
 };
 

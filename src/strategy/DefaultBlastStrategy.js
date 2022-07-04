@@ -2,6 +2,7 @@ import BlastStrategy from "./BlastStrategy";
 import Game from "../Game";
 import { GameFieldAnimatorComponent, GameFieldComponent } from "../components";
 import GameSettings from "../GameSettings";
+import StrategyResult from "./StrategyResult";
 
 class DefaultBlastStrategy extends BlastStrategy {
     
@@ -17,23 +18,21 @@ class DefaultBlastStrategy extends BlastStrategy {
         let tileType = tileInfo.type;
 
         if (tileType >= GameSettings.CurrentSettings.typesCount) {
-            this.onSupertilePressed(tileType, tileId);
-            return;
+            return this.onSupertilePressed(tileType, tileId);
         }
 
         let result = this.gameField.tryToBurnByColor(tileId);
 
         if (result.length < GameSettings.CurrentSettings.minGroupSize) {
             this.#animator.rejectBurn(result);
-            return false;
+            return new StrategyResult(false, 0, false);
         }
             
         let isSuperTileCreated = false;
 
-        if (GameSettings.CurrentSettings.useSupertile) {
-            let count = 0;
-            result.forEach(ids => ids.forEach(_ => count++));
+        let count = this.gameField.getTilesCount(result);
 
+        if (GameSettings.CurrentSettings.useSupertile) {
             if (count >= GameSettings.CurrentSettings.supertileMinGroupSize) {
                 let tileInfo = this.gameField.tilesMap[result[0][0]];
                 let tile = this.gameField.tilesMatrix[tileInfo.col][tileInfo.row];
@@ -51,7 +50,7 @@ class DefaultBlastStrategy extends BlastStrategy {
 
         this.#animator.burn(result, isSuperTileCreated);
 
-        return true;
+        return new StrategyResult(true, count, true);
     }
 
     onSupertilePressed(tileType, tileId) {
@@ -68,7 +67,8 @@ class DefaultBlastStrategy extends BlastStrategy {
 
         this.#animator.burn(result);
 
-        return true;
+        let count = this.gameField.getTilesCount(result);
+        return new StrategyResult(true, count, true);
     }
 };
 

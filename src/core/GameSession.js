@@ -2,7 +2,8 @@ import GameWorld from "./GameWorld";
 import { EventEmitter } from '@pixi/utils';
 
 export default class GameSession extends EventEmitter {
-    static SESSION_END = "SESSION_END";
+    static SESSION_END = "SessionEnd";
+    static RETURN_TO_MENU = "ReturnToMenu";
     
     #screen;
 

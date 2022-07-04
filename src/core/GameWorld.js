@@ -28,7 +28,6 @@ class GameWorld {
         
         //TODO
         // this.gameTime += dt * 1000 / 60;
-        // // console.log(this.gameTime.toFixed(3));
         // TWEEN.update(this.gameTime);
     }
 
