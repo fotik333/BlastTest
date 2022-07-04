@@ -1,82 +1,91 @@
 import GameSession from "../core/GameSession";
 import { layoutConfig, WIDTH, HEIGHT } from '../config/layout';
-import gameConfig from '../config/gameConfig.json';
 import GameObject from "../core/GameObject";
-import { DisplayObjectComponent, BlastLogicComponent, GameFieldAnimatorComponent } from '../components';
+import { DisplayObjectComponent, GameFieldAnimatorComponent, GameFieldComponent } from '../components';
 import { Graphics, Container } from "pixi.js";
 import { createSprite } from '../utils/utils.js';
-import { Tween, Easing } from "@tweenjs/tween.js";
-import Game from "../Game";
+import BoostersControllerComponent from "../components/BoostersControllerComponent";
+import HUDControllerComponent from "../components/HUDControllerComponent";
+import GameSettings from "../GameSettings";
+
+const maxWidth = 800;
+const maxHeight = 700;
 
 export default class BlastGameSession extends GameSession {
     #layout = layoutConfig.gameScreen;
-    #config;
-    #logic;
+    #gameField;
 
-    constructor(screen, config) {
+    constructor(screen) {
         super(screen);
 
-        this.#config = config;
         this.inflate(this.#layout);
 
         this._initGameObjects();
         this._initUI();
-        // this._initSetup();
-    }
-
-    _initUI() {
-        this.timer = this.screen.getChildByName('Timer');
-        this.timer.setup(gameConfig.gameTime);
-
-        this.bombButton = this.screen.getChildByName('BoosterBombButton');
-        this.bombButton.setCount(Game.bombCount);
-        this.screen.on(this.#layout.events.onBombButtonPressed, this._updateBombButtonState.bind(this));
-
-        this.swapButton = this.screen.getChildByName('BoosterSwapButton');
-        this.swapButton.setCount(Game.swapCount);
-        this.screen.on(this.#layout.events.onSwapButtonPressed, this._updateSwapButtonState.bind(this));
-    }
-
-    _updateSwapButtonState() {
-        this.bombButton.setActive(false);
-
-        this.swapButton.switchActive();
-        this.#logic.onSwapPressed(this.swapButton.getActive(), _ => this.swapButton.boosterUsed());
-    }
-
-    _updateBombButtonState() {
-        this.swapButton.setActive(false);
-
-        this.bombButton.switchActive();
-        this.#logic.onBombPressed(this.bombButton.getActive(), _ => this.bombButton.boosterUsed());
     }
 
     _initGameObjects() {
-        this._initLogic();
         this._initGameField();
     }
 
     _initGameField() {
-        let components = [
-            new DisplayObjectComponent(new Container(), this.screen),
-            new GameFieldAnimatorComponent(this.#logic)
-        ];
-
-        this._gameField = new GameObject('GameField', components);
-    }
-
-    _initLogic() {
-        let logicComponent = new BlastLogicComponent();
-        // setupComponent.on('WIN', this.onWin.bind(this));
-        // setupComponent.on('LOSE', this.onLose.bind(this));
+        this.#gameField = new GameFieldComponent();
         
         let components = [
-            logicComponent
+            new DisplayObjectComponent(new Container, this.screen),
+            new GameFieldAnimatorComponent(this.#gameField),
+            this.#gameField
         ];
 
-        this.#logic = logicComponent;
+        let tileSprite = createSprite({ texture: 'tile' });
+        let offsetX = tileSprite.width;
+        let offsetY = tileSprite.height;
 
-        new GameObject('Logic', components);
+        let gameFieldGameObject = new GameObject('GameField', components);
+
+        //TODO move to ?
+        let sizeX = GameSettings.CurrentSettings.sizeX;
+        let sizeY = GameSettings.CurrentSettings.sizeY;
+
+        let widthRatio = maxWidth / (sizeX * offsetX);
+        let heightRatio = maxWidth / (sizeY * offsetY);
+        let ratio = Math.min(widthRatio, heightRatio);
+
+        gameFieldGameObject.transform.scale = { x: ratio, y: ratio };
+        gameFieldGameObject.transform.position = { x: 200, y: 250 };
+
+        offsetX = offsetX * ratio;
+        offsetY = offsetY * ratio;
+
+        let gameFieldBG = this.screen.getChildByName('GameFieldBG');
+
+        gameFieldBG.beginFill(0x9ed7e1).drawRoundedRect(
+            200 - 3 * offsetX / 4 - 20,
+            250 - 3 * offsetY / 4 - 20,
+            sizeX * offsetX + offsetX / 2 + 40,
+            sizeY * offsetY + offsetY / 2 + 40,
+            offsetX / 4
+        );
+
+        gameFieldBG.beginFill(0x0d233d).drawRoundedRect(
+            200 - 3 * offsetX / 4,
+            250 - 3 * offsetY / 4,
+            sizeX * offsetX + offsetX / 2,
+            sizeY * offsetY + offsetY / 2,
+            offsetX / 4
+        );
+    }
+
+    _initUI() {
+        let boostersController = new BoostersControllerComponent(this.screen, this.#layout);
+        let hudController = new HUDControllerComponent(this.screen, this.#layout);
+        
+        let components = [
+            boostersController,
+            hudController
+        ];
+
+        new GameObject('UI', components);
     }
 
     onWin() {

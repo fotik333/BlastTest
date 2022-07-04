@@ -34,6 +34,10 @@ class GameObject {
             c.onAwake();
             c.onEnable();
         });
+
+        this.onPositionSet();
+        this.onRotationSet();
+        this.onScaleSet();
     }
 
     enable() {

@@ -1,8 +1,8 @@
 import TransformComponent from "./TransformComponent";
 import DisplayObjectComponent from "./DisplayObjectComponent";
-import BlastLogicComponent from "./BlastLogicComponent";
+import GameFieldComponent from "./GameFieldComponent";
 import GameFieldAnimatorComponent from "./GameFieldAnimatorComponent";
-import TileAnimationComponent from "./TileAnimationComponent";
+import TileComponent from "./TileComponent";
 import TileInputComponent from "./TileInputComponent";
 
-export { TileInputComponent, TileAnimationComponent, GameFieldAnimatorComponent, TransformComponent, DisplayObjectComponent, BlastLogicComponent };
+export { TileInputComponent, TileComponent, GameFieldAnimatorComponent, TransformComponent, DisplayObjectComponent, GameFieldComponent };

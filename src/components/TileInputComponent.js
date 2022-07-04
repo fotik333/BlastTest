@@ -1,18 +1,12 @@
 import Component from "../core/Component";
-import { SpaceshipAttackComponent, DisplayObjectComponent, TileAnimationComponent } from ".";
-import GameWorld from "../core/GameWorld";
-import Game from "../Game";
+import { DisplayObjectComponent } from ".";
 
 class TileInputComponent extends Component {
-    #displayObject;
-    #tile;
+    static TILE_PRESSED = 'TilePressed';
 
-    constructor(screen, layout) {
-        super();
-    }
+    #displayObject;
 
     onAwake() {
-        this.#tile = this.gameObject.getComponent(TileAnimationComponent);
         this.#displayObject = this.gameObject.getComponent(DisplayObjectComponent).displayObject;
 
         this.#displayObject.interactive = true;

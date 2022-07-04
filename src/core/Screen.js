@@ -9,6 +9,7 @@ class Screen extends Container {
     constructor(layoutConfig) {
         super();
 
+        this.sortableChildren = true;
         if (layoutConfig) this.inflate(layoutConfig);
     }
 
@@ -18,38 +19,48 @@ class Screen extends Container {
         this.name = layoutConfig.screenName;
 
 		layoutConfig.children.forEach(childConfig => {
-			let element = this.addChild(childConfig.createElement());
-            element.name = childConfig.name;
-            childConfig.layer && (element.layer = childConfig.layer);
-
-            if (childConfig.scale) {
-                if (childConfig.scale.length) {
-                    element.scale.set(...childConfig.scale);
-                } else {
-                    element.scale.set(childConfig.scale);
-                }
-            }
-
-            if (childConfig.anchor) {
-                if (childConfig.anchor.length) {
-                    element.anchor.set(...childConfig.anchor);
-                } else {
-                    element.anchor.set(childConfig.anchor);
-                }
-            }
-
-            childConfig.position && element.position.set(...childConfig.position);
-
-            if (childConfig.visible !== undefined) element.visible = childConfig.visible;
-
-            if (childConfig.filters && childConfig.filters.length > 0) element.filters = childConfig.filters;
-
-            childConfig.events && childConfig.events.forEach(event => {
-                element.on(event.elementEvent, _ => this.emit(event.exposeEvent));
-            });
+            this._applyChild(childConfig, this);
 		});
         
         this.#inflated = true;
+    }
+
+    _applyChild(childConfig, parent) {
+        let element = parent.addChild(childConfig.createElement());
+        element.name = childConfig.name;
+        childConfig.layer && (element.layer = childConfig.layer);
+
+        if (childConfig.scale) {
+            if (childConfig.scale.length) {
+                element.scale.set(...childConfig.scale);
+            } else {
+                element.scale.set(childConfig.scale);
+            }
+        }
+
+        if (childConfig.anchor) {
+            if (childConfig.anchor.length) {
+                element.anchor.set(...childConfig.anchor);
+            } else {
+                element.anchor.set(childConfig.anchor);
+            }
+        }
+
+        childConfig.position && element.position.set(...childConfig.position);
+        
+        if (childConfig.zIndex !== undefined) element.zIndex = childConfig.zIndex;
+
+        if (childConfig.visible !== undefined) element.visible = childConfig.visible;
+
+        if (childConfig.filters && childConfig.filters.length > 0) element.filters = childConfig.filters;
+
+        childConfig.events && childConfig.events.forEach(event => {
+            element.on(event.elementEvent, _ => this.emit(event.exposeEvent));
+        });
+
+        if (childConfig.children && childConfig.children.length > 0) {
+            childConfig.children.forEach(config => this._applyChild(config, element));
+        }
     }
 }
 

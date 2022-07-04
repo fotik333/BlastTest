@@ -1,91 +1,88 @@
 import Component from "../core/Component";
 import GameObject from "../core/GameObject";
-import DisplayObjectComponent from "./DisplayObjectComponent";
-// import BlastLogicComponent from "./BlastLogicComponent";
-import TileAnimationComponent from "./TileAnimationComponent";
-import TileInputComponent from "./TileInputComponent";
+import { DisplayObjectComponent, TileComponent, TileInputComponent } from "./";
 import { createSprite } from '../utils/utils.js';
 import GameObjectPool from "../utils/GameObjectPool";
-import Game from "../Game";
+import GameSettings from "../GameSettings";
 
 class GameFieldAnimatorComponent extends Component {
-    #logic;
+    #gameField;
     #tilesMap = {};
     #container;
-    #transform;
-    #tileToSwap;
+    #animationPlaying = false;
 
-    constructor(logic) {
+    constructor(gameField) {
         super();
 
-        this.#logic = logic;
+        this.#gameField = gameField;
     }
 
     onAwake() {
-        this.#transform = this.gameObject.transform;
-        this.#transform.scale = { x: 0.5, y: 0.5 };
-        this.#transform.position = { x: 120, y: 120 };
-
         this.#container = this.gameObject.getComponent(DisplayObjectComponent).displayObject;
 
-        this.tilesPool = new GameObjectPool(this._createTileFunc.bind(this), Game.sizeX * Game.sizeY);
+        this.tilesPool = new GameObjectPool(this._createTileFunc.bind(this), GameSettings.CurrentSettings.sizeX * GameSettings.CurrentSettings.sizeY);
 
-        this._createField(this.#logic.getField());
+        this._createField();
     }
 
-    _onTilePressed(id) {
-        let result = this.#logic.onTilePressed(id);
-
-        switch (result.status) {
-            case 'burned':
-                this._onBurnFinished(result);
-                break;
-            case 'rejected':
-                this._onBurnRejected(result);
-                break;
-            case 'swapStarted':
-                this._onSwapStarted(result);
-                break;
-            case 'swapFinished':
-                this._onSwapFinished(result);
-                break;
-            default:
-                break;
-        }
+    async createSupertile(id, type) {
+        this.#tilesMap[id].superTile(type);
     }
 
-    async _onBurnFinished(result) {
-        for (let i = 0; i < result.length; i++) {
+    async burn(result, superTile) {
+        this.#animationPlaying = true;
+
+        for (let i = superTile ? 1 : 0; i < result.length; i++) {
             let ids = result[i];
             ids.forEach(id => this.#tilesMap[id].burn());
 
             await waiter(50);
         }
 
-        await waiter(150);
+        await waiter(100);
+
+        this.#animationPlaying = false;
         
         this._updateField();
     }
 
-    _onSwapStarted(result) {
-        this.#tilesMap[result[0]].swapReady();
+    async swapCancelled(tileID) {
+        this.#tilesMap[tileID].swapCancelled();
     }
 
-    _onSwapFinished(result) {
+    async swapStarted(tileID) {
+        this.#tilesMap[tileID].swapReady();
+    }
+
+    async swap(result) {
+        this.#animationPlaying = true;
+
         result.forEach(tileInfo => {
             let tile = this.#tilesMap[tileInfo.id];
             tile.moveTo(tileInfo.col, tileInfo.row);
         });
+
+        await waiter(250);
+
+        this.#animationPlaying = false;
     }
 
-    _onBurnRejected(result) {
+    async rejectBurn(result) {
+        this.#animationPlaying = true;
+
         result.forEach(ids => {
             ids.forEach(id => this.#tilesMap[id].reject());
         });
+        
+        await waiter(150);
+        
+        this.#animationPlaying = false;
     }
 
     async _updateField() {
-        let result = this.#logic.getField();
+        this.#animationPlaying = true;
+
+        let result = this.#gameField.tilesMap;
 
         let keys = Object.keys(result);
         let movedTiles = [];
@@ -113,35 +110,48 @@ class GameFieldAnimatorComponent extends Component {
             tile.fallTo(tileInfo.col, tileInfo.row);
         });
 
-        this.#logic.clearFlags();
+        this.#gameField.clearFlags();
 
         await waiter(100);
+        
         this._checkCombinations();
     }
 
     _checkCombinations() {
-        let isCombinationExists = this.#logic.checkCombinations();
+        let isCombinationExists = this.#gameField.checkCombinations();
 
         if (!isCombinationExists) {
-            this.#logic.shuffle();
+            //TODO ограничить перемешивания
+            this.#gameField.shuffle();
             this._updateField();
+            return;
         }
+        
+        this.#animationPlaying = false;
     }
 
-    _createField(tilesMap) {
-        Object.keys(tilesMap).forEach(key => {
-            let tileInfo = tilesMap[key];
+    onTilePressed(id) {
+        if (this.#animationPlaying) return;
+
+        this.#gameField.onTilePressed(id);
+    }
+
+    _createField() {
+        let tilesMap = this.#gameField.tilesMap;
+
+        Object.keys(tilesMap).forEach(id => {
+            let tileInfo = tilesMap[id];
 
             let tile = this.tilesPool.getNext();
 
-            let tileComponent = tile.getComponent(TileAnimationComponent);
+            let tileComponent = tile.getComponent(TileComponent);
             tileComponent.setPosition(tileInfo.col, tileInfo.row);
             tileComponent.setType(tileInfo.type);
 
-            let inputComponent = tile.getComponent(TileInputComponent);
-            inputComponent.on('TilePressed', this._onTilePressed.bind(this, key));
+            let tileInputComponent = tile.getComponent(TileInputComponent);
+            tileInputComponent.on(TileInputComponent.TILE_PRESSED, _ => this.onTilePressed(id));
 
-            this.#tilesMap[key] = tileComponent;
+            this.#tilesMap[id] = tileComponent;
         });
 
         this._checkCombinations();
@@ -152,7 +162,7 @@ class GameFieldAnimatorComponent extends Component {
         
         let components = [
             new DisplayObjectComponent(sprite, this.#container),
-            new TileAnimationComponent(),
+            new TileComponent(),
             new TileInputComponent()
         ];
 

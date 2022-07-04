@@ -1,6 +1,8 @@
 import { Button, TextButton, Timer, BoosterButton } from '../ui';
-import { Text, TextStyle } from 'pixi.js';
+import { Text, TextStyle, Graphics, Container, TextInput } from 'pixi.js';
 import { GlowFilter } from '@pixi/filter-glow';
+import { createSprite } from '../utils/utils';
+import GameSettings from '../GameSettings';
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
@@ -15,56 +17,132 @@ const layoutConfig = {
         children: [
             {
                 name: 'PlayButton',
-                createElement: () => new TextButton({ normal: 'btn_normal', hover: 'btn_hover', pressed: 'btn_pressed' }, new Text('PLAY', new TextStyle({ fill: '#000099' })), -26),
+                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('PLAY', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
                 events : [
                     { elementEvent: "pressed", exposeEvent: 'PLAY_BUTTON_PRESSED' }
                 ],
                 scale: 2,
-                position: [WIDTH / 2, HEIGHT / 2 + 250],
+                position: [WIDTH / 2, HEIGHT / 2 + 200],
                 anchor: [.5, 1]
+            },
+            {
+                name: 'SettingsButton',
+                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('SETTINGS', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 42 })), -50),
+                events : [
+                    { elementEvent: "pressed", exposeEvent: 'SETTINGS_BUTTON_PRESSED' }
+                ],
+                scale: 2,
+                position: [WIDTH / 2, HEIGHT / 2 - 100],
+                anchor: [.5, 1]
+            },
+            {
+                name: 'Settings',
+                createElement: () => new Container,
+                children: [
+                    {
+                        name: 'SizeX',
+                        createElement: _ => new Container,
+                        position: [400, 100],
+                        children: [
+                            {
+                                name: 'SizeXLabel',
+                                createElement: () => new Text('Size X: ', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 70 })),
+                                anchor: [1, .5],
+                                position: [-150, -10],
+                            },
+                            {
+                                name: 'SizeXDecreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('-', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [-100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SIZE_X_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SizeXIncreaseButton',
+                                createElement: () => new TextButton({ normal: 'small_button' }, new Text('+', new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })), -18),
+                                scale: [.8, .8],
+                                anchor: [.5, .5],
+                                position: [100, 0],
+                                events : [
+                                    { elementEvent: "pressed", exposeEvent: 'SIZE_X_DECREASE_BUTTON_PRESSED' }
+                                ],
+                            },
+                            {
+                                name: 'SizeX',
+                                createElement: () => new Text(GameSettings.CurrentSettings.sizeX, new TextStyle({ fill: '#ffffff', fontFamily: 'LuckiestGuy', fontSize: 90 })),
+                                anchor: [.5, .5],
+                                position: [0, -10],
+                            }
+                        ]
+                    }
+                ]
             },
         ],
         events: {
-            onPlayButtonPressed: 'PLAY_BUTTON_PRESSED'
+            onPlayButtonPressed: 'PLAY_BUTTON_PRESSED',
+            onSettingsButtonPressed: 'SETTINGS_BUTTON_PRESSED',
+            onSizeXIncreased: 'SIZE_X_INCREASE_BUTTON_PRESSED',
+            onSizeXDecreased: 'SIZE_X_DECREASE_BUTTON_PRESSED',
         },
     },
     gameScreen: {
         screenName: GAME_SCENE,
         children: [
             {
-                name: 'Timer',
+                name: 'ScoreField',
                 layer: 'UI',
-                createElement: () => new Timer(new Text('', new TextStyle({ fill: '#555599', fontSize: 80 }))),
-                events : [
-                    { elementEvent: "TIMER_END", exposeEvent: 'TIMER_END' }
-                ],
-                position: [30, 30],
-            },
-            {
-                name: 'BoosterBombButton',
-                layer: 'UI',
-                createElement: () => new BoosterButton({ normal: 'bonus_bg' }, new Text('Bomb', { fontSize: 90 }), -100, new Text('5', { fontSize: 80 }), 100),
+                createElement: () => createSprite({ texture: 'score_panel_bg'}),
                 events: [
                     { elementEvent: "pressed", exposeEvent: 'BOMB_BUTTON_PRESSED' }
                 ],
                 anchor: [.5, .5],
-                position: [WIDTH - 200, 200],
+                position: [1300, HEIGHT / 2 - 100],
+            },
+            {
+                name: 'BoosterBombButton',
+                layer: 'UI',
+                createElement: () => new BoosterButton(
+                    { normal: 'bonus_bg' },
+                    new Text('Bomb', { fill: '#ffffff', fontSize: 60, fontFamily: 'LuckiestGuy' }),
+                    -60,
+                    new Text('5', { fill: '#ffffff', fontSize: 55, fontFamily: 'LuckiestGuy' }),
+                    38
+                ),
+                events: [
+                    { elementEvent: "pressed", exposeEvent: 'BOMB_BUTTON_PRESSED' }
+                ],
+                anchor: [.5, .5],
+                position: [1150, HEIGHT - 150],
             },
             {
                 name: 'BoosterSwapButton',
                 layer: 'UI',
-                createElement: () => new BoosterButton({ normal: 'bonus_bg' }, new Text('Swap', { fontSize: 90 }), -100, new Text('5', { fontSize: 80 }), 100),
+                createElement: () => new BoosterButton(
+                    { normal: 'bonus_bg' },
+                    new Text('Swap', { fill: '#ffffff', fontSize: 60, fontFamily: 'LuckiestGuy' }),
+                    -60,
+                    new Text('5', { fill: '#ffffff', fontSize: 55, fontFamily: 'LuckiestGuy' }),
+                    38
+                ),
                 events: [
                     { elementEvent: "pressed", exposeEvent: 'SWAP_BUTTON_PRESSED' }
                 ],
                 anchor: [.5, .5],
-                position: [WIDTH - 200, 600],
+                position: [1450, HEIGHT - 150],
+            },
+            {
+                name: 'GameFieldBG',
+                zIndex: -1,
+                layer: 'UI',
+                createElement: () => new Graphics
             },
         ],
         events: {
             onSwapButtonPressed: 'SWAP_BUTTON_PRESSED',
             onBombButtonPressed: 'BOMB_BUTTON_PRESSED',
-            onTimerEnd: 'TIMER_END'
         }
     },
     resultScreen: {
@@ -72,7 +150,7 @@ const layoutConfig = {
         children: [
             {
                 name: 'RestartButton',
-                createElement: () => new TextButton({ normal: 'btn_normal', hover: 'btn_hover', pressed: 'btn_pressed' }, new Text('RESTART', new TextStyle({ fill: '#000099' })), -26),
+                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('RESTART', new TextStyle({ fill: '#000099' })), -26),
                 events: [
                     { elementEvent: "pressed", exposeEvent: 'RESTART_BUTTON_PRESSED' }
                 ],
@@ -82,7 +160,7 @@ const layoutConfig = {
             },
             {
                 name: 'MenuButton',
-                createElement: () => new TextButton({ normal: 'btn_normal', hover: 'btn_hover', pressed: 'btn_pressed' }, new Text('MENU', new TextStyle({ fill: '#000099' })), -26),
+                createElement: () => new TextButton({ normal: 'panel1', hover: 'panel1', pressed: 'panel1' }, new Text('MENU', new TextStyle({ fill: '#000099' })), -26),
                 events: [
                     { elementEvent: "pressed", exposeEvent: 'MENU_BUTTON_PRESSED' }
                 ],

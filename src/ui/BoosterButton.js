@@ -2,7 +2,6 @@ import { TextButton } from '.';
 import { Tween, Easing } from "@tweenjs/tween.js";
 
 export default class BoosterButton extends TextButton {
-    #count;
     #active;
 
     constructor(textures, text, textOffsetY, countText, countTextOffsetY) {
@@ -20,33 +19,16 @@ export default class BoosterButton extends TextButton {
         this._countText = countText;
     }
 
-    setCount(count) {
-        this.#count = count;
+    setCountText(count) {
         this._countText.text = count;
-    }
-
-    decreaseCount() {
-        this.#count--;
-        this._countText.text = this.#count;
-
-        if (this.#count <= 0) this.interactive = false;
-    }
-
-    getCount() {
-        return this.#count;
     }
 
     getActive() {
         return this.#active;
     }
 
-    switchActive() {
+    toggleActive() {
         this.setActive(!this.#active);
-    }
-
-    boosterUsed() {
-        this.setActive(false);
-        this.decreaseCount();
     }
 
     setActive(active) {
